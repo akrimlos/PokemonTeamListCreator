@@ -42,36 +42,31 @@ var Pokemon = class {
     }
     str += "\n";
     if (this.ability) {
-      str += `Ability: ${this.ability}
-`;
+      str += `Ability: ${this.ability}\n`;
     }
-    if (!Number.isNaN(this.level)) {
-      str += `Level: ${this.level}
-`;
-    }
+    
+    // NOTA: Se remueve la escritura de 'Level' en el formato Showdown 
+    // para cumplir con los lineamientos de las nuevas listas oficiales.
+    
     if (this.shiny === true) {
-      str += `Shiny: Yes
-`;
+      str += `Shiny: Yes\n`;
     }
     if (!Number.isNaN(this.happiness)) {
-      str += `Happiness: ${this.happiness}
-`;
+      str += `Happiness: ${this.happiness}\n`;
     }
     if (this.pokeball) {
-      str += `Pokeball: ${this.pokeball}
-`;
+      str += `Pokeball: ${this.pokeball}\n`;
     }
     if (!Number.isNaN(this.dynamaxLevel)) {
-      str += `Dynamax Level: ${this.dynamaxLevel}
-`;
+      str += `Dynamax Level: ${this.dynamaxLevel}\n`;
     }
     if (this.gigantamax === true) {
-      str += `Gigantamax: Yes
-`;
+      str += `Gigantamax: Yes\n`;
     }
+    
+    // Cambiado de 'Tera Type' a 'Stat Alignment' para la exportación de texto
     if (this.teraType) {
-      str += `Tera Type: ${this.teraType}
-`;
+      str += `Stat Alignment: ${this.teraType}\n`;
     }
     if (this.evs) {
       const evs = this.evs;
@@ -83,8 +78,7 @@ var Pokemon = class {
       }).join(" / ") + "\n";
     }
     if (this.nature) {
-      str += `${this.nature} Nature
-`;
+      str += `${this.nature} Nature\n`;
     }
     if (this.ivs) {
       const ivs = this.ivs;
@@ -130,9 +124,7 @@ var PokemonTeam = class {
   }
   toShowdown() {
     const name = this.folder ? `${this.folder}/${this.name}` : this.name;
-    let str = `=== [${this.format}] ${name} ===
-
-`;
+    let str = `=== [${this.format}] ${name} ===\n\n`;
     str += this.pokemon.map(function(p) {
       return p.toString();
     }).join("\n\n");
@@ -294,7 +286,6 @@ var _ShowdownParser = class {
     const propNames = [
       "nature",
       "ability",
-      "level",
       "shiny",
       "happiness",
       "pokeball",
@@ -358,7 +349,9 @@ ShowdownParser.regexes = {
   pokeball: /^(?:Pokeball|Ball):\s?(.*)$/i,
   dynamaxLevel: /^Dynamax Level:\s?([0-9]{1,2})$/i,
   gigantamax: /^Gigantamax:\s?(Yes|No)$/i,
-  teraType: /^Tera Type:\s?(.*)$/i
+  
+  // Expresión regular modificada para procesar dinámicamente "Stat Alignment" o "Tera Type"
+  teraType: /^(?:Stat Alignment|Tera Type):\s?(.*)$/i
 };
 
 // src/Koffing.ts
