@@ -133,14 +133,12 @@ if (lang) {
 const langFiles = [
 
     "./Resources/Pokes/Pokes",
-
     "./Resources/Abilities/Abilities",
-
     "./Resources/Items/Items",
-
     "./Resources/Moves/Moves",
-
-    "./Resources/Types/Types"];
+    "./Resources/Types/Types", 
+    "./Resources/Natures/Natures"
+];
 
 
 
@@ -160,8 +158,17 @@ for (let i = 0; i < langs.length; i++) {
 
     }
 
+
 }
 
+
+//Cargador del Traductor multilenguaje
+    var natureScript = document.createElement('script');
+    natureScript.setAttribute(
+    'src',
+    './Resources/Natures/NatureTranslator.js'
+                             );
+      document.head.appendChild(natureScript);
 
 
 const button = document.getElementById('print');
@@ -273,8 +280,22 @@ function sheetChange(event) {
 }
 
 
-
 function generatePdf(element) {
+
+//Validacion defensiva click rapido antes de generar pdf.
+         const langReady =
+         window.pokesEn &&
+         window.abilitiesEn &&
+         window.itemsEn &&
+         window.movesEn &&
+         window.naturesEn &&
+         window.NatureTranslator;
+
+      if (!langReady) {
+           document.getElementById('error').innerText =
+           'LANGUAGE FILES NOT LOADED YET';
+           return;
+                      }
 
     document.getElementById('error').innerText = '';
 
@@ -649,8 +670,9 @@ function generatePdf(element) {
             }
 
 
-
             var statAlignment = pokes[i].nature || 'Serious';
+            const natureId = NatureTranslator[statAlignment];
+            statAlignment = window['natures' + chosenLang]?.[natureId] || statAlignment;
 
             var level = 50; 
 
@@ -718,7 +740,7 @@ function generatePdf(element) {
 
                 var moveId = MoveTranslator[pokes[i].moves[x]];
 
-                movs.push(window['moves' + chosenLang][moveId]);
+                movs.push(  window['moves' + chosenLang]?.[moveId] ||  pokes[i].moves[x] );
 
             }
 
@@ -933,15 +955,15 @@ doc.setFontSize(10);
 
         doc.setFont("text1", 'normal');
 
-        doc.text("Support ID: ", 140, 59, "right");
+        doc.text("Support ID: ", 140, 58, "right");
 
-        doc.line(140, 60.5, 180, 60.5);
+        doc.line(140, 58.5, 180, 58.5);
 
         doc.setFontSize(13);
 
         doc.setFont("text2", 'normal');
 
-        doc.text(supportId, 142, 59);
+        doc.text(supportId, 141, 58);
 
 
 
@@ -1218,9 +1240,22 @@ doc.setFontSize(10);
                     
 
                     var statAlignment = pokes[i].nature || "Serious";
+                    const natureId = NatureTranslator[statAlignment];
+                    const translatedNature = window['natures' + currentLang]?.[natureId];
+                    statAlignment = translatedNature || statAlignment;
+                    var natureFontSize = startFontSize;
 
+                    var natureTextWidth = doc.getStringUnitWidth(statAlignment) * natureFontSize;
+
+                        while ( natureTextWidth > limitTextWidth && natureFontSize > 5 ) {
+
+                        natureFontSize -= 0.5;
+
+                     doc.setFontSize(natureFontSize);
+                     natureTextWidth = doc.getStringUnitWidth(statAlignment) * natureFontSize;
+                                                                                         }
                     doc.text(statAlignment, 22+c_width*(i+1), ystart+ygap+8*ygap*u, "center");
-
+                    doc.setFontSize(startFontSize);
                     
 
                     id = AbilityTranslator[pokes[i].ability];
